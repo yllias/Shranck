@@ -10,76 +10,92 @@ import CoreData
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
-
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
+        sortDescriptors: [],
+        animation: .easeInOut)
     private var items: FetchedResults<Item>
+
+    @State private var isGridVisible = false
 
     var body: some View {
         NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+            VStack {
+                Button(action: {
+                    addItem()
+                }) {
+                    Image(systemName: "plus")
+                        .font(.title)
+                        .padding()
+                }
+                Spacer()
+                if !items.isEmpty {
+                    LazyVGrid(columns: Array(repeating: GridItem(), count: 3), spacing: 10) {
+                        ForEach(items) { item in
+                            if let imageData = item.image, let uiImage = UIImage(data: imageData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 100, height: 100)
+                                    .onTapGesture {
+                                        removeItem(item)
+                                    }
+                            }
+                        }
                     }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+                    .padding()
                 }
             }
-            Text("Select an item")
+            .navigationTitle("Wardrobe")
+            .onAppear {
+                isGridVisible = !items.isEmpty
+            }
         }
     }
 
     private func addItem() {
         withAnimation {
             let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
+            if let imageData = randomImageData() {
+                newItem.image = imageData
+            }
             do {
                 try viewContext.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
+    private func removeItem(_ item: Item) {
         withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
+            viewContext.delete(item)
             do {
                 try viewContext.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
+    }
+    
+    private func randomImageData() -> Data? {
+        let imageSize = CGSize(width: 100, height: 100)
+        let renderer = UIGraphicsImageRenderer(size: imageSize)
+        let randomColor = UIColor(red: .random(in: 0...1),
+                                  green: .random(in: 0...1),
+                                  blue: .random(in: 0...1),
+                                  alpha: 1)
+        
+        let image = renderer.image { context in
+            randomColor.setFill()
+            context.fill(CGRect(origin: .zero, size: imageSize))
+        }
+        
+        return image.pngData()
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
 
 #Preview {
     ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
