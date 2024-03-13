@@ -16,41 +16,45 @@ struct ContentView: View {
     private var items: FetchedResults<Item>
 
     @State private var isGridVisible = false
+    @State private var selectedItem: Item? = nil // Track selected item
 
     var body: some View {
-        NavigationView {
-            VStack {
-                Button(action: {
-                    addItem()
-                }) {
-                    Image(systemName: "plus")
-                        .font(.title)
-                        .padding()
-                }
-                Spacer()
-                if !items.isEmpty {
-                    LazyVGrid(columns: Array(repeating: GridItem(), count: 3), spacing: 10) {
-                        ForEach(items) { item in
-                            if let imageData = item.image, let uiImage = UIImage(data: imageData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 100, height: 100)
-                                    .onTapGesture {
-                                        removeItem(item)
-                                    }
+            NavigationView {
+                VStack {
+                    Button(action: {
+                        addItem()
+                    }) {
+                        Image(systemName: "plus")
+                            .font(.title)
+                            .padding()
+                    }
+                    Spacer()
+                    if !items.isEmpty {
+                        LazyVGrid(columns: Array(repeating: GridItem(), count: 3), spacing: 10) {
+                            ForEach(items) { item in
+                                if let imageData = item.image, let uiImage = UIImage(data: imageData) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100, height: 100)
+                                        .onLongPressGesture {
+                                            selectedItem = item // Set selected item
+                                        }
+                                }
                             }
                         }
+                        .padding()
                     }
-                    .padding()
+                }
+                .navigationTitle("Wardrobe")
+                .sheet(item: $selectedItem) { selectedItem in // Present ItemDetailView when selectedItem is not nil
+                    ItemDetailView(item: selectedItem)
+                }
+                .onAppear {
+                    isGridVisible = !items.isEmpty
                 }
             }
-            .navigationTitle("Wardrobe")
-            .onAppear {
-                isGridVisible = !items.isEmpty
-            }
         }
-    }
 
     private func addItem() {
         withAnimation {

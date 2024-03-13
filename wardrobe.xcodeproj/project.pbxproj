@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5577F5082BA20AC10023E199 /* ItemDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5577F5072BA20AC10023E199 /* ItemDetailView.swift */; };
 		55795E1C2BA11433000FD7D5 /* wardrobeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55795E1B2BA11433000FD7D5 /* wardrobeApp.swift */; };
 		55795E1E2BA11433000FD7D5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55795E1D2BA11433000FD7D5 /* ContentView.swift */; };
 		55795E202BA11435000FD7D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55795E1F2BA11435000FD7D5 /* Assets.xcassets */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5577F5072BA20AC10023E199 /* ItemDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailView.swift; sourceTree = "<group>"; };
 		55795E182BA11433000FD7D5 /* wardrobe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wardrobe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55795E1B2BA11433000FD7D5 /* wardrobeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = wardrobeApp.swift; sourceTree = "<group>"; };
 		55795E1D2BA11433000FD7D5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 			children = (
 				55795E1B2BA11433000FD7D5 /* wardrobeApp.swift */,
 				55795E1D2BA11433000FD7D5 /* ContentView.swift */,
+				5577F5072BA20AC10023E199 /* ItemDetailView.swift */,
 				55795E1F2BA11435000FD7D5 /* Assets.xcassets */,
 				55795E242BA11435000FD7D5 /* Persistence.swift */,
 				55795E262BA11435000FD7D5 /* wardrobe.xcdatamodeld */,
@@ -143,6 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5577F5082BA20AC10023E199 /* ItemDetailView.swift in Sources */,
 				55795E252BA11435000FD7D5 /* Persistence.swift in Sources */,
 				55795E1E2BA11433000FD7D5 /* ContentView.swift in Sources */,
 				55795E1C2BA11433000FD7D5 /* wardrobeApp.swift in Sources */,
@@ -280,6 +284,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"wardrobe/Preview Content\"";
+				DEVELOPMENT_TEAM = 3M9KRA7XZQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -309,6 +314,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"wardrobe/Preview Content\"";
+				DEVELOPMENT_TEAM = 3M9KRA7XZQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
