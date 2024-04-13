@@ -15,14 +15,6 @@ struct PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.name = "Sample Item"
-            if let imageData = randomImageData() {
-                newItem.image = imageData
-            }
-        }
-        
         do {
             try viewContext.save()
         } catch {
@@ -46,21 +38,5 @@ struct PersistenceController {
             }
         })
         container.viewContext.automaticallyMergesChangesFromParent = true
-    }
-    
-    private static func randomImageData() -> Data? {
-        let imageSize = CGSize(width: 100, height: 100)
-        let renderer = UIGraphicsImageRenderer(size: imageSize)
-        let randomColor = UIColor(red: .random(in: 0...1),
-                                  green: .random(in: 0...1),
-                                  blue: .random(in: 0...1),
-                                  alpha: 1)
-        
-        let image = renderer.image { context in
-            randomColor.setFill()
-            context.fill(CGRect(origin: .zero, size: imageSize))
-        }
-        
-        return image.pngData()
     }
 }

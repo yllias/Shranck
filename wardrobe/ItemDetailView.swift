@@ -5,13 +5,16 @@
 //  Created by Yll Kryeziu on 13.03.24.
 //
 
+import CoreData
 import Foundation
 import SwiftUI
-import CoreData
 
 struct ItemDetailView: View {
     let item: Item
+    @Binding var isShowing: Bool
     
+
+    @Environment(\.managedObjectContext) private var viewContext
     var body: some View {
         VStack {
             if let imageData = item.image, let uiImage = UIImage(data: imageData) {
@@ -21,27 +24,40 @@ struct ItemDetailView: View {
                     .frame(width: 200, height: 200)
                     .padding()
             }
-            
+
             Text("Item Details")
                 .font(.title)
                 .padding()
 
-            // Example of displaying additional item details
             Text("Item Name: \(item.name ?? "Unknown")")
                 .padding()
             
+            Text("Item Category: \(item.category ?? "Unknown")")
+                .padding()
+
             Spacer()
+            Image(systemName: "trash")
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundColor(.red)
+                .padding()
+                .onTapGesture {
+                    removeItem(item)
+                    isShowing = false
+                }
         }
         .navigationTitle("Item Detail")
     }
-}
 
-struct ItemDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        let previewItem = Item()
-        previewItem.name = "Sample Item"
-        
-        return ItemDetailView(item: previewItem)
-            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    private func removeItem(_ item: Item) {
+        withAnimation {
+            viewContext.delete(item)
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
     }
 }
