@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>brand</key>
+		<string>Adidas</string>
+		<key>category</key>
+		<string>Shoes</string>
+		<key>deletable</key>
+		<true/>
+		<key>name</key>
+		<string>Running Shoes</string>
+		<key>price</key>
+		<real>99.98999999999999</real>
+	</dict>
+	<dict>
+		<key>brand</key>
+		<string>Nike</string>
+		<key>category</key>
+		<string>T-Shirts</string>
+		<key>deletable</key>
+		<true/>
+		<key>name</key>
+		<string>Graphic Tee</string>
+		<key>price</key>
+		<real>29.99</real>
+	</dict>
+</array>
+</plist>

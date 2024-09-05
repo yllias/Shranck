@@ -12,41 +12,68 @@ import SwiftUI
 struct ItemDetailView: View {
     let item: Item
     @Binding var isShowing: Bool
-    
 
     @Environment(\.managedObjectContext) private var viewContext
+    @State private var itemName: String
+    @State private var itemPrice: Float
+    @State private var itemBrand: String
+
+    init(item: Item, isShowing: Binding<Bool>) {
+        self.item = item
+        self._isShowing = isShowing
+        _itemName = State(initialValue: item.name ?? "")
+        _itemPrice = State(initialValue: item.price)
+        _itemBrand = State(initialValue: item.brand ?? "")
+    }
+
     var body: some View {
-        VStack {
-            if let imageData = item.image, let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 200, height: 200)
+        ZStack {
+            Color("backgroundColor")
+                .ignoresSafeArea(.all)
+            VStack {
+                Text("Item Details")
+                    .font(.title)
                     .padding()
-            }
-
-            Text("Item Details")
-                .font(.title)
-                .padding()
-
-            Text("Item Name: \(item.name ?? "Unknown")")
-                .padding()
-            
-            Text("Item Category: \(item.category ?? "Unknown")")
-                .padding()
-
-            Spacer()
-            Image(systemName: "trash")
-                .resizable()
-                .frame(width: 24, height: 24)
-                .foregroundColor(.red)
-                .padding()
-                .onTapGesture {
-                    removeItem(item)
-                    isShowing = false
+                    .foregroundColor(Color.black)
+                if let imageData = item.image, let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 200, height: 200)
+                        .padding()
                 }
+
+                Text("Item Category: \(item.category ?? "Unknown")")
+                    .padding()
+                    .foregroundColor(Color.black)
+
+                TextField("Name", text: $itemName)
+                    .padding()
+                    .foregroundColor(Color.black)
+
+                TextField("Brand", text: $itemBrand)
+                    .keyboardType(.decimalPad)
+                    .padding()
+                    .foregroundColor(Color.black)
+
+                TextField("Price", value: $itemPrice, formatter: NumberFormatter())
+                    .keyboardType(.decimalPad)
+                    .padding()
+                    .foregroundColor(Color.black)
+
+                Spacer()
+                Image(systemName: "trash")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.red)
+                    .padding()
+                    .onTapGesture {
+                        removeItem(item)
+                        isShowing = false
+                    }
+            }
+            .navigationTitle("Item Detail")
         }
-        .navigationTitle("Item Detail")
     }
 
     private func removeItem(_ item: Item) {

@@ -34,56 +34,100 @@ import Vision
 
 struct ClothingCategoryView: View {
     let category: String
+    @Binding var displayedItems: [String: Item]
+
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel = PhotoPickerViewModel()
 
     @FetchRequest private var items: FetchedResults<Item>
 
-    init(category: String) {
+    init(category: String, displayedItems: Binding<[String: Item]>) {
         self.category = category
+        self._displayedItems = displayedItems
+
         var categoryPredicate: NSPredicate {
-            return NSPredicate(format: "category == %d", argumentArray: [category])
+            return NSPredicate(format: "category BEGINSWITH[c] %@", category)
         }
         _items = FetchRequest<Item>(sortDescriptors: [], predicate: categoryPredicate)
     }
-    
+
     @State private var isGridVisible = false
     @State private var selectedItem: Item? = nil
     @State private var isShowingItemDetail = false
     @State private var isShowingPhotoPicker = false
 
-    
-    
     var body: some View {
         NavigationView {
-            VStack {
-                PhotosPicker(selection: $viewModel.imageSelections, matching: .images) {
-                    Image(systemName: "plus").font(.title).padding()
-                }
-                Button(action: { addRandom() }) { Text("Add Random") }
-                if !items.isEmpty {
-                    ScrollView(.vertical) {
-                        LazyVGrid(columns: Array(repeating: GridItem(), count: 2), spacing: 10) {
-                            ForEach(items) { item in
-                                if let imageData = item.image,
-                                    let uiImage = UIImage(data: imageData)
-                                {
-                                    Image(uiImage: uiImage).resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 150, height: 150)
-                                        .onLongPressGesture {
-                                            selectedItem = item
-                                            isShowingItemDetail = true
-                                        }
+            ZStack {
+                Color("backgroundColor")
+                    .ignoresSafeArea(.all)
+                VStack (spacing: 5){
+                    PhotosPicker(selection: $viewModel.imageSelections, matching: .images) {
+                        Text("+")
+                            .font(.title)
+                            .padding()
+                            .foregroundColor(Color.black)
+                    }
+                    if !items.isEmpty {
+                        ScrollView(.vertical) {
+                            LazyVGrid(columns: Array(repeating: GridItem(), count: 2), spacing: 10)
+                            {
+                                Image(uiImage: categoryToImage(categories: category))
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 150, height: 150)
+                                    .onTapGesture {
+                                        print("tapped X")
+                                        displayedItems[category] = nil
+                                    }
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(
+                                                displayedItems[category] == nil
+                                                    ? Color.gray : Color.clear
+                                            )
+                                            .opacity(0.25)
+                                            .scaleEffect(1.05)
+                                    )
+                                ForEach(items) { item in
+                                    if let imageData = item.image,
+                                        let uiImage = UIImage(data: imageData)
+                                    {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 150, height: 150)
+                                            .onTapGesture {
+                                                print("tapped")
+                                                displayedItems[category] = item
+                                            }
+                                            .onLongPressGesture {
+                                                print("long press")
+                                                displayedItems[category] = item
+                                                selectedItem = item
+                                                if(selectedItem != nil) {
+                                                    isShowingItemDetail = true
+                                                }
+                                            }
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .fill(
+                                                        displayedItems[category] == item
+                                                            ? Color.gray : Color.clear
+                                                    )
+                                                    .opacity(0.25)
+                                                    .scaleEffect(1.05)
+                                            )
+                                    }
                                 }
                             }
+                            .padding()
                         }
-                        .padding()
                     }
                 }
             }
         }
-        .navigationTitle("Your " + category)
+        .navigationTitle("Your " + (category.contains("Acc") ? "Accessories" : category))
         .onChange(of: viewModel.selectedImages) {
             for item in viewModel.selectedImages {
                 guard let processed = liftSubject(image: item) else {
@@ -138,19 +182,6 @@ struct ClothingCategoryView: View {
         return nil
     }
 
-    private func addRandom() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.image = randomImageData()
-            newItem.name = "kleidung"
-            do { try viewContext.save() } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-            print("Image created" + self.category)
-        }
-    }
-
     private func addItem(image: UIImage) {
         withAnimation {
             let newItem = Item(context: viewContext)
@@ -160,6 +191,31 @@ struct ClothingCategoryView: View {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
+        }
+    }
+    
+    public func categoryToImage(categories: String) -> UIImage {
+        switch categories {
+        case "Hats":
+            return UIImage(named: "cap")!
+        case "Accessories1":
+            return UIImage(named: "tie")!
+        case "Accessories2":
+            return UIImage(named: "glasses")!
+        case "Accessories3":
+            return UIImage(named: "handbag")!
+        case "Sweatshirts":
+            return UIImage(named: "sweater")!
+        case "Shirts":
+            return UIImage(named: "tshirt")!
+        case "Jacket":
+            return UIImage(named: "jacket")!
+        case "Pants":
+            return UIImage(named: "jeansskirt")!
+        case "Shoes":
+            return UIImage(named: "sneakers")!
+        default:
+            return UIImage(systemName: "exclamationmark.triangle")!
         }
     }
 
